@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+
+bookmark_backups/
+.tmp-new-api/
+.tmp-sub2api/
+
+codex-left-records-transfer/
+codex-export-left-records.ps1
