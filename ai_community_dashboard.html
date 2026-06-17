@@ -3,25 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 中转站站点识别面板</title>
+  <title>AI 中转站收藏导航</title>
   <style>
     :root {
-      --bg: #071019;
-      --bg-2: #0c1522;
-      --panel: rgba(10, 17, 28, 0.88);
-      --panel-soft: rgba(12, 21, 34, 0.78);
-      --line: rgba(120, 144, 170, 0.14);
-      --line-strong: rgba(59, 130, 246, 0.24);
-      --text: #eef4fb;
-      --muted: #8aa0ba;
-      --accent: #4ea1ff;
-      --accent-2: #2dd4bf;
-      --accent-3: #f59e0b;
-      --danger: #fb7185;
-      --other: #94a3b8;
-      --shadow: 0 28px 70px rgba(2, 8, 20, 0.46);
-      --mono: "Cascadia Code", "JetBrains Mono", "Fira Code", Consolas, monospace;
-      --sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --bg: #0b0d10;
+      --bg-2: #12161a;
+      --panel: #111418;
+      --panel-2: #171b20;
+      --card: #13171c;
+      --card-2: #191f26;
+      --text: #f3efe5;
+      --muted: #aba393;
+      --subtle: #7b7468;
+      --line: rgba(225, 216, 197, 0.14);
+      --line-strong: rgba(225, 216, 197, 0.28);
+      --accent: #d9a441;
+      --accent-soft: rgba(217, 164, 65, 0.14);
+      --newapi: #78a9ff;
+      --sub2: #58d0a7;
+      --other: #9aa3ad;
+      --review: #f4b860;
+      --failed: #ff7d73;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+      --mono: "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+      --display: "Bahnschrift", "Arial Narrow", "Microsoft YaHei UI", sans-serif;
+      --sans: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
     }
 
     * {
@@ -30,17 +36,20 @@
 
     html {
       color-scheme: dark;
+      scroll-behavior: smooth;
     }
 
     body {
       margin: 0;
-      font-family: var(--sans);
-      color: var(--text);
-      background:
-        radial-gradient(circle at 8% 10%, rgba(78, 161, 255, 0.16), transparent 20%),
-        radial-gradient(circle at 92% 12%, rgba(45, 212, 191, 0.11), transparent 20%),
-        linear-gradient(180deg, #060d16 0%, #09111b 44%, #08111a 100%);
       min-height: 100vh;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at 14% 0%, rgba(217, 164, 65, 0.12), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(120, 169, 255, 0.10), transparent 24%),
+        linear-gradient(180deg, #0a0c0f, #0e1115 38%, #0a0c0f 100%);
     }
 
     body::before {
@@ -49,108 +58,160 @@
       inset: 0;
       pointer-events: none;
       background-image:
-        linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
-      background-size: 30px 30px;
-      mask-image: linear-gradient(180deg, rgba(0,0,0,0.86), transparent 95%);
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.76), transparent 90%);
     }
 
     .page {
-      width: min(1480px, calc(100vw - 24px));
+      width: min(1540px, calc(100vw - 26px));
       margin: 0 auto;
-      padding: 20px 0 40px;
+      padding: 16px 0 44px;
+    }
+
+    .observatory-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .observatory-nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .observatory-nav a:hover {
+      border-color: rgba(217, 164, 65, 0.36);
+      color: var(--text);
+      background: rgba(217, 164, 65, 0.08);
+    }
+
+    .observatory-nav a.is-live {
+      border-color: rgba(217, 164, 65, 0.38);
+      color: #f6d293;
+      background: rgba(217, 164, 65, 0.12);
     }
 
     .masthead {
+      position: relative;
+      overflow: hidden;
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) 330px;
+      grid-template-columns: minmax(0, 1fr) 350px;
       gap: 18px;
+      min-height: 256px;
       padding: 24px;
-      border-radius: 26px;
-      background: linear-gradient(180deg, rgba(10, 18, 32, 0.95), rgba(10, 18, 32, 0.82));
       border: 1px solid var(--line);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), transparent),
+        linear-gradient(135deg, rgba(23, 27, 32, 0.98), rgba(13, 16, 20, 0.96));
       box-shadow: var(--shadow);
+    }
+
+    .masthead::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -46px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      border: 1px solid rgba(217, 164, 65, 0.12);
+      background:
+        radial-gradient(circle at center, rgba(217, 164, 65, 0.08), transparent 60%),
+        radial-gradient(circle at 34% 42%, rgba(120, 169, 255, 0.18), transparent 12%),
+        radial-gradient(circle at 62% 66%, rgba(88, 208, 167, 0.18), transparent 12%);
     }
 
     .eyebrow {
       display: inline-flex;
+      width: fit-content;
       align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
+      min-height: 30px;
+      padding: 0 10px;
+      border: 1px solid rgba(217, 164, 65, 0.26);
       border-radius: 999px;
-      background: rgba(78, 161, 255, 0.1);
-      border: 1px solid rgba(78, 161, 255, 0.22);
-      color: var(--accent);
+      background: rgba(217, 164, 65, 0.10);
+      color: #f0c36f;
       font-family: var(--mono);
       font-size: 12px;
-      letter-spacing: 0.08em;
+      font-weight: 800;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
 
     .masthead h1 {
-      margin: 14px 0 0;
-      font-size: clamp(34px, 5vw, 56px);
-      line-height: 0.96;
-      letter-spacing: -0.04em;
-      max-width: 10ch;
+      max-width: 820px;
+      margin: 16px 0 0;
+      color: var(--text);
+      font-family: var(--display);
+      font-size: clamp(40px, 5.4vw, 78px);
+      font-weight: 850;
+      line-height: 0.95;
+      letter-spacing: 0;
     }
 
     .masthead p {
-      margin: 14px 0 0;
-      max-width: 780px;
+      max-width: 800px;
+      margin: 16px 0 0;
       color: var(--muted);
-      line-height: 1.78;
       font-size: 16px;
+      line-height: 1.75;
     }
 
     .meta-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       margin-top: 18px;
     }
 
     .meta-pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
       border-radius: 999px;
-      background: rgba(148, 163, 184, 0.08);
-      border: 1px solid rgba(148, 163, 184, 0.14);
+      background: rgba(255,255,255,0.04);
       color: var(--muted);
-      font-size: 13px;
       font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0;
     }
 
     .summary-panel {
       display: grid;
       gap: 12px;
-      align-content: start;
+      align-content: end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .big-stat,
+    .mini-stat {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(10px);
+      box-shadow: none;
     }
 
     .big-stat {
       padding: 18px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(15, 27, 46, 0.98), rgba(8, 15, 27, 0.96));
-      border: 1px solid var(--line-strong);
-    }
-
-    .big-stat span,
-    .mini-stat span {
-      display: block;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .big-stat strong {
-      display: block;
-      margin: 10px 0 6px;
-      font-size: clamp(34px, 4vw, 48px);
-      line-height: 1;
     }
 
     .mini-grid {
@@ -160,132 +221,205 @@
     }
 
     .mini-stat {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(13, 24, 41, 0.82);
-      border: 1px solid var(--line);
+      padding: 14px;
+    }
+
+    .big-stat span,
+    .mini-stat span {
+      display: block;
+      color: var(--subtle);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .big-stat strong,
+    .mini-stat strong {
+      display: block;
+      color: var(--text);
+      font-family: var(--mono);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .big-stat strong {
+      margin: 10px 0 8px;
+      font-size: 52px;
     }
 
     .mini-stat strong {
-      display: block;
       margin-top: 8px;
-      font-size: 24px;
-      line-height: 1;
+      font-size: 28px;
     }
 
     .control-bar {
+      position: sticky;
+      top: 0;
+      z-index: 35;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 250px;
-      gap: 18px;
-      margin: 20px 0;
+      grid-template-columns: minmax(0, 1fr) 230px;
+      gap: 12px;
+      margin: 14px 0;
+      padding: 10px 0;
+      background: rgba(11, 13, 16, 0.88);
+      backdrop-filter: blur(18px);
     }
 
     .search-panel,
-    .status-panel {
-      border-radius: 22px;
-      background: var(--panel);
+    .status-panel,
+    .resource-section,
+    .calculator-panel {
       border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(17, 20, 24, 0.94);
       box-shadow: var(--shadow);
     }
 
     .search-panel {
-      padding: 18px;
       display: grid;
-      gap: 14px;
+      gap: 10px;
+      padding: 12px;
     }
 
     .section-label {
-      color: var(--muted);
+      color: var(--subtle);
       font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
       text-transform: uppercase;
+    }
+
+    .search-box-wrap,
+    .field input,
+    .field select {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
     }
 
     .search-box-wrap {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(7, 12, 22, 0.44);
-      border: 1px solid rgba(148, 163, 184, 0.12);
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 13px;
+      border-radius: 14px;
+    }
+
+    .search-box-wrap:focus-within,
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(217, 164, 65, 0.44);
+      box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.12);
     }
 
     .search-box-wrap span {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
       display: inline-grid;
       place-items: center;
-      background: rgba(78, 161, 255, 0.14);
-      color: var(--accent);
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: rgba(217, 164, 65, 0.14);
+      color: #f5cf8a;
       font-family: var(--mono);
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 900;
     }
 
     .search-box {
       width: 100%;
       border: 0;
-      outline: none;
+      outline: 0;
       background: transparent;
       color: var(--text);
-      font-size: 15px;
+      font: inherit;
     }
 
-    .search-box::placeholder {
-      color: #6c86a6;
+    .search-box::placeholder,
+    .field input::placeholder {
+      color: var(--subtle);
     }
 
     .chip-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .quick-chip {
+    .quick-chip,
+    .calc-button {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
+      justify-content: center;
+      min-height: 38px;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      background: rgba(10, 18, 32, 0.76);
+      background: rgba(255,255,255,0.05);
       color: var(--text);
       cursor: pointer;
       font-family: var(--mono);
       font-size: 12px;
-      transition: 0.16s ease;
+      font-weight: 900;
+      letter-spacing: 0;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+      touch-action: manipulation;
     }
 
     .quick-chip span {
-      color: var(--muted);
+      color: var(--subtle);
     }
 
     .quick-chip:hover,
-    .quick-chip.active {
-      border-color: rgba(78, 161, 255, 0.34);
-      background: rgba(78, 161, 255, 0.1);
-      color: #d9eaff;
+    .quick-chip.active,
+    .calc-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(217, 164, 65, 0.38);
+      background: rgba(217, 164, 65, 0.10);
+      color: #f6d293;
+    }
+
+    .calc-button.-danger:hover {
+      border-color: rgba(255, 125, 115, 0.42);
+      background: rgba(255, 125, 115, 0.10);
+      color: #ffc7c2;
+    }
+
+    .quick-chip:focus-visible,
+    .resource-card:focus-visible,
+    .calc-button:focus-visible {
+      outline: 3px solid rgba(217, 164, 65, 0.16);
+      outline-offset: 3px;
     }
 
     .status-panel {
-      padding: 18px;
       display: grid;
       align-content: center;
-      gap: 10px;
+      gap: 6px;
+      padding: 12px 14px;
     }
 
     .status-panel strong {
       display: block;
+      color: var(--text);
+      font-family: var(--mono);
       font-size: 34px;
+      font-weight: 900;
       line-height: 1;
     }
 
     .status-panel span,
-    .status-panel div:last-child {
+    .status-panel div:last-child,
+    .calc-status,
+    .field small,
+    .ratio-note {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .stack {
@@ -294,68 +428,142 @@
     }
 
     .resource-section {
-      padding: 20px;
-      border-radius: 22px;
-      background: var(--panel-soft);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 0;
     }
 
     .section-head {
+      position: static;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 16px;
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(217, 164, 65, 0.08), transparent 42%);
     }
 
     .section-copy h2 {
       margin: 0;
+      color: var(--text);
+      font-family: var(--display);
       font-size: 24px;
-      letter-spacing: -0.02em;
+      font-weight: 850;
+      line-height: 1.08;
+      letter-spacing: 0;
     }
 
     .section-copy p {
+      max-width: 900px;
       margin: 8px 0 0;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-      max-width: 720px;
+      font-size: 14px;
+      line-height: 1.65;
     }
 
     .section-head > span {
-      padding: 8px 10px;
+      flex: 0 0 auto;
+      min-height: 34px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
       border-radius: 999px;
-      background: rgba(129, 140, 248, 0.12);
-      color: #c7d2fe;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
       font-family: var(--mono);
       font-size: 12px;
+      font-weight: 900;
       white-space: nowrap;
     }
 
     .resource-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(295px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 14px;
+      padding: 14px;
     }
 
     .resource-card {
-      display: block;
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto auto;
+      min-height: 206px;
       padding: 16px;
-      border-radius: 20px;
-      text-decoration: none;
-      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 18px;
       background:
-        linear-gradient(180deg, rgba(10, 17, 29, 0.92), rgba(7, 13, 22, 0.86));
-      border: 1px solid rgba(148, 163, 184, 0.08);
-      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+        var(--card);
+      color: var(--text);
+      text-decoration: none;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .resource-card::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--other);
+      box-shadow: 0 0 0 4px rgba(154, 166, 184, 0.08);
+    }
+
+    .resource-card:has(.is-newapi)::before {
+      background: var(--newapi);
+      box-shadow: 0 0 0 4px rgba(120, 169, 255, 0.10);
+    }
+
+    .resource-card:has(.is-favorite)::before {
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(217, 164, 65, 0.14);
+    }
+
+    .resource-card:has(.is-favorite) {
+      border-color: rgba(217, 164, 65, 0.34);
+      background:
+        linear-gradient(180deg, rgba(217, 164, 65, 0.10), rgba(255,255,255,0.02)),
+        var(--card-2);
+      box-shadow:
+        0 22px 44px rgba(0, 0, 0, 0.28),
+        0 0 0 1px rgba(217, 164, 65, 0.08) inset;
+      overflow: hidden;
+    }
+
+    .resource-card:has(.is-favorite)::after {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto -30%;
+      width: 60%;
+      height: 180%;
+      transform: rotate(24deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 229, 163, 0.12), transparent);
+      pointer-events: none;
+    }
+
+    .resource-card:has(.is-sub2)::before {
+      background: var(--sub2);
+      box-shadow: 0 0 0 4px rgba(88, 208, 167, 0.10);
+    }
+
+    .resource-card:has(.is-review)::before {
+      background: var(--review);
+      box-shadow: 0 0 0 4px rgba(244, 184, 96, 0.10);
+    }
+
+    .resource-card:has(.is-failed)::before {
+      background: var(--failed);
+      box-shadow: 0 0 0 4px rgba(255, 125, 115, 0.10);
     }
 
     .resource-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(78, 161, 255, 0.22);
-      background: linear-gradient(180deg, rgba(11, 20, 35, 0.98), rgba(8, 15, 26, 0.94));
-      box-shadow: 0 18px 38px rgba(4, 10, 20, 0.32);
+      transform: translateY(-3px);
+      border-color: var(--line-strong);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03)),
+        var(--card-2);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
     }
 
     .resource-top {
@@ -364,189 +572,531 @@
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 12px;
+      padding-left: 18px;
     }
 
     .resource-domain {
-      color: var(--accent);
+      min-width: 0;
+      overflow: hidden;
+      color: #e8dfcf;
       font-family: var(--mono);
-      font-size: 11px;
-      word-break: break-all;
+      font-size: 13px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .resource-open {
-      color: var(--muted);
+      flex: 0 0 auto;
+      color: var(--accent);
       font-family: var(--mono);
       font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
     }
 
     .resource-meta {
       display: flex;
-      align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      align-items: center;
+      gap: 7px;
       margin-bottom: 12px;
     }
 
     .platform-badge,
-    .resource-score {
+    .resource-score,
+    .pricing-chip {
       display: inline-flex;
       align-items: center;
-      height: 26px;
+      min-height: 28px;
       padding: 0 10px;
+      border: 1px solid transparent;
       border-radius: 999px;
       font-family: var(--mono);
       font-size: 11px;
-      letter-spacing: 0.02em;
-    }
-
-    .platform-badge {
-      border: 1px solid transparent;
+      font-weight: 900;
+      letter-spacing: 0;
     }
 
     .platform-badge.is-newapi {
-      color: #dbeafe;
-      background: rgba(59, 130, 246, 0.14);
-      border-color: rgba(59, 130, 246, 0.24);
+      color: #d7e5ff;
+      background: rgba(120, 169, 255, 0.14);
+      border-color: rgba(120, 169, 255, 0.24);
+    }
+
+    .platform-badge.is-favorite {
+      color: #fff0c9;
+      background: rgba(217, 164, 65, 0.16);
+      border-color: rgba(217, 164, 65, 0.30);
     }
 
     .platform-badge.is-sub2 {
-      color: #ccfbf1;
-      background: rgba(45, 212, 191, 0.14);
-      border-color: rgba(45, 212, 191, 0.24);
+      color: #d9fff2;
+      background: rgba(88, 208, 167, 0.13);
+      border-color: rgba(88, 208, 167, 0.22);
     }
 
     .platform-badge.is-other {
-      color: #e2e8f0;
-      background: rgba(148, 163, 184, 0.12);
-      border-color: rgba(148, 163, 184, 0.22);
+      color: #e7ecef;
+      background: rgba(154, 166, 184, 0.11);
+      border-color: rgba(154, 166, 184, 0.18);
     }
 
     .platform-badge.is-review {
-      color: #fde68a;
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.24);
+      color: #fff0d2;
+      background: rgba(244, 184, 96, 0.14);
+      border-color: rgba(244, 184, 96, 0.22);
     }
 
     .platform-badge.is-failed {
-      color: #fecdd3;
-      background: rgba(251, 113, 133, 0.12);
-      border-color: rgba(251, 113, 133, 0.22);
+      color: #ffe0dc;
+      background: rgba(255, 125, 115, 0.14);
+      border-color: rgba(255, 125, 115, 0.22);
     }
 
-    .resource-score {
+    .assessment-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
+      background: rgba(255,255,255,0.04);
       color: var(--muted);
-      background: rgba(148, 163, 184, 0.08);
-      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .assessment-chip.is-trust-high {
+      color: #ddfff6;
+      background: rgba(49, 208, 170, 0.14);
+      border-color: rgba(49, 208, 170, 0.22);
+    }
+
+    .assessment-chip.is-trust-mid {
+      color: #dce8ff;
+      background: rgba(120, 169, 255, 0.14);
+      border-color: rgba(120, 169, 255, 0.22);
+    }
+
+    .assessment-chip.is-trust-low {
+      color: #fff2d5;
+      background: rgba(244, 184, 96, 0.14);
+      border-color: rgba(244, 184, 96, 0.22);
+    }
+
+    .assessment-chip.is-trust-risk,
+    .assessment-chip.is-risk {
+      color: #ffdcd8;
+      background: rgba(255, 125, 115, 0.12);
+      border-color: rgba(255, 125, 115, 0.2);
+    }
+
+    .assessment-chip.is-entry {
+      color: #e8dfcf;
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .resource-section[data-group="我的常用"] .section-head {
+      background: linear-gradient(90deg, rgba(217, 164, 65, 0.16), transparent 48%);
+    }
+
+    .resource-section[data-group="我的常用"] {
+      border-color: rgba(217, 164, 65, 0.30);
+      box-shadow:
+        0 22px 54px rgba(0, 0, 0, 0.26),
+        0 0 0 1px rgba(217, 164, 65, 0.06) inset;
+    }
+
+    .resource-section[data-group="我的常用"] .section-copy h2 {
+      color: #ffe3a8;
+    }
+
+    .resource-section[data-group="公益站"] .section-head {
+      background: linear-gradient(90deg, rgba(244, 184, 96, 0.16), transparent 48%);
+    }
+
+    .resource-score,
+    .pricing-chip {
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      border-color: var(--line);
+    }
+
+    .pricing-chip.-hot {
+      color: #ffd5c5;
+      background: rgba(255, 125, 115, 0.12);
+      border-color: rgba(255, 125, 115, 0.18);
+    }
+
+    .pricing-chip.-cool {
+      color: #d7e5ff;
+      background: rgba(120, 169, 255, 0.12);
+      border-color: rgba(120, 169, 255, 0.18);
+    }
+
+    .pricing-chip.-mint {
+      color: #d9fff2;
+      background: rgba(88, 208, 167, 0.12);
+      border-color: rgba(88, 208, 167, 0.18);
     }
 
     .resource-card strong {
       display: block;
-      font-size: 15px;
-      line-height: 1.55;
-      margin-bottom: 10px;
+      margin: 0 0 12px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .resource-url,
+    .resource-reason {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.6;
       word-break: break-word;
     }
 
     .resource-url {
-      display: block;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11px;
-      line-height: 1.6;
       word-break: break-all;
     }
 
-    .resource-reason {
-      display: block;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(148, 163, 184, 0.12);
-      color: #7ee7d6;
-      font-family: var(--mono);
-      font-size: 10px;
-      line-height: 1.7;
-      word-break: break-all;
+    .resource-reason,
+.resource-reason {
+      color: #9ee9d3;
     }
-
-    .empty-state {
+.empty-state {
       display: none;
-      padding: 26px;
-      border-radius: 22px;
-      border: 1px dashed rgba(148, 163, 184, 0.22);
-      background: var(--panel);
+      padding: 28px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 18px;
+      background: rgba(17, 20, 24, 0.92);
       color: var(--muted);
       text-align: center;
-      box-shadow: var(--shadow);
+      box-shadow: none;
     }
 
     .empty-state.visible {
       display: block;
     }
 
-    @media (max-width: 980px) {
+    .calculator-panel {
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .calculator-head {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(217, 164, 65, 0.08), transparent 40%);
+    }
+
+    .calculator-head h2 {
+      margin: 0;
+      color: var(--text);
+      font-family: var(--display);
+      font-size: 26px;
+      font-weight: 850;
+      line-height: 1.08;
+    }
+
+    .calculator-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .calculator-body {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .calculator-grid,
+    .ratio-grid,
+    .result-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .calculator-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .ratio-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .result-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .field,
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .field {
+      padding: 12px;
+    }
+
+    .field label,
+    .result-card span {
+      display: block;
+      color: var(--subtle);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      margin-top: 8px;
+      min-height: 42px;
+      border-radius: 12px;
+      padding: 0 12px;
+      outline: 0;
+      font: inherit;
+    }
+
+    .result-card {
+      padding: 14px;
+      min-height: 92px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+
+    .result-card strong {
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: 0;
+      word-break: break-word;
+    }
+
+    .calculator-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    @media (max-width: 1180px) {
+      .calculator-grid,
+      .result-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1080px) {
       .masthead,
       .control-bar {
         grid-template-columns: 1fr;
+      }
+
+      .control-bar {
+        position: static;
       }
     }
 
     @media (max-width: 720px) {
       .page {
-        width: min(100vw - 14px, 1480px);
-        padding: 14px 0 28px;
+        width: min(100vw - 16px, 1540px);
+        padding: 10px 0 28px;
       }
 
-      .masthead,
-      .search-panel,
-      .status-panel,
-      .resource-section {
-        border-radius: 18px;
+      .observatory-nav {
+        gap: 6px;
       }
 
       .masthead {
-        padding: 20px;
+        min-height: 0;
+        padding: 18px;
       }
 
       .masthead h1 {
-        max-width: none;
-        font-size: clamp(32px, 11vw, 46px);
+        font-size: 42px;
       }
 
-      .resource-grid {
+      .meta-pill,
+      .quick-chip,
+      .observatory-nav a {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .section-head {
+        display: grid;
+      }
+
+      .resource-grid,
+      .calculator-grid,
+      .ratio-grid,
+      .result-grid {
         grid-template-columns: 1fr;
       }
+
+      .resource-card {
+        min-height: 0;
+      }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+    
+    .resource-section[data-group="我的常用"] {
+      position: relative;
+      overflow: hidden;
+      border-color: rgba(255, 194, 92, 0.34);
+      background:
+        radial-gradient(circle at 10% 18%, rgba(255, 194, 92, 0.14), transparent 22%),
+        radial-gradient(circle at 86% 18%, rgba(77, 163, 255, 0.10), transparent 20%),
+        linear-gradient(135deg, rgba(25, 20, 12, 0.96), rgba(13, 17, 22, 0.96));
+      box-shadow:
+        0 26px 64px rgba(0, 0, 0, 0.34),
+        0 0 0 1px rgba(255, 194, 92, 0.06) inset;
+    }
+
+    .resource-section[data-group="我的常用"]::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255, 225, 155, 0.08) 36%, transparent 62%),
+        repeating-linear-gradient(90deg, transparent 0 39px, rgba(255,255,255,0.018) 39px 40px);
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.95), rgba(0,0,0,0.75));
+    }
+
+    .resource-section[data-group="我的常用"] .section-head {
+      position: relative;
+      background: linear-gradient(90deg, rgba(255, 194, 92, 0.16), transparent 52%);
+    }
+
+    .resource-section[data-group="我的常用"] .section-copy h2 {
+      color: #ffe3a7;
+      text-shadow: 0 0 24px rgba(255, 194, 92, 0.12);
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card {
+      overflow: hidden;
+      border-color: rgba(255, 194, 92, 0.24);
+      background:
+        linear-gradient(180deg, rgba(255, 194, 92, 0.10), rgba(255,255,255,0.02)),
+        rgba(24, 26, 31, 0.96);
+      box-shadow:
+        0 20px 38px rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(255, 194, 92, 0.05) inset;
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card::after {
+      content: "";
+      position: absolute;
+      inset: -28% auto auto -34%;
+      width: 58%;
+      height: 220%;
+      transform: rotate(22deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 226, 154, 0.16), transparent);
+      pointer-events: none;
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card:hover {
+      transform: translateY(-7px) scale(1.01);
+      border-color: rgba(255, 194, 92, 0.42);
+      box-shadow:
+        0 28px 58px rgba(0, 0, 0, 0.28),
+        0 0 30px rgba(255, 194, 92, 0.10);
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card[data-favorite-tone="0"] {
+      background:
+        radial-gradient(circle at 86% 18%, rgba(82, 162, 255, 0.14), transparent 18%),
+        linear-gradient(180deg, rgba(255, 194, 92, 0.10), rgba(255,255,255,0.02)),
+        rgba(24, 26, 31, 0.96);
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card[data-favorite-tone="1"] {
+      background:
+        radial-gradient(circle at 84% 18%, rgba(85, 226, 187, 0.14), transparent 18%),
+        linear-gradient(180deg, rgba(255, 194, 92, 0.10), rgba(255,255,255,0.02)),
+        rgba(24, 26, 31, 0.96);
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card[data-favorite-tone="2"] {
+      background:
+        radial-gradient(circle at 84% 18%, rgba(255, 116, 133, 0.16), transparent 18%),
+        linear-gradient(180deg, rgba(255, 194, 92, 0.10), rgba(255,255,255,0.02)),
+        rgba(24, 26, 31, 0.96);
+    }
+
+    .resource-section[data-group="我的常用"] .resource-card[data-favorite-tone="3"] {
+      background:
+        radial-gradient(circle at 84% 18%, rgba(190, 129, 255, 0.16), transparent 18%),
+        linear-gradient(180deg, rgba(255, 194, 92, 0.10), rgba(255,255,255,0.02)),
+        rgba(24, 26, 31, 0.96);
+    }
+    
   </style>
 </head>
 <body>
-  <main class="page">
+  <main class="page" id="overview">
+    
+    <nav class="observatory-nav" aria-label="section navigation">
+      <a class="is-live" href="#overview">总览</a>
+      <a href="#sectionStack">节点名册</a>
+      <a href="#sectionStack">扫描台</a>
+      <a href="#sectionStack">风险记录</a>
+    </nav>
+    
     <section class="masthead">
       <div>
-        <span class="eyebrow">AI Relay Navigator</span>
-        <h1>AI 中转站站点识别面板</h1>
-        <p>把 ai中转站 里的全部链接按 NewAPI / Sub2API 深度识别结果收拢展示，保留识别依据和分数，方便你快速筛站。</p>
+        <span class="eyebrow">AI Relay Bookmark Deck</span>
+        <h1>AI 中转站收藏导航</h1>
+        <p>把常用中转站整理成一个清爽的私人收藏页，方便快速搜索、筛选和直接访问。</p>
         <div class="meta-row">
           <span class="meta-pill">source: 历史归档 / ai中转站</span>
-          <span class="meta-pill">generated: 2026-06-16 17:38:51</span>
+          <span class="meta-pill">generated: 2026-06-17 17:37:00</span>
           <span class="meta-pill">rule: 公开接口 + 页面标题 + 前端指纹 + 人工校正</span>
         </div>
       </div>
       <div class="summary-panel">
         <div class="big-stat">
           <span>resource count</span>
-          <strong>152</strong>
+          <strong>84</strong>
           <span>links collected</span>
         </div>
         <div class="mini-grid">
           <div class="mini-stat">
             <span>groups</span>
-            <strong>5</strong>
+            <strong>7</strong>
           </div>
           <div class="mini-stat">
             <span>domains</span>
-            <strong>131</strong>
+            <strong>84</strong>
           </div>
         </div>
       </div>
@@ -554,94 +1104,132 @@
 
     <section class="control-bar">
       <div class="search-panel">
-        <div class="section-label">Search And Focus</div>
+        <div class="section-label">扫描台</div>
         <div class="search-box-wrap">
           <span>/</span>
           <input id="searchBox" class="search-box" type="search" placeholder="搜标题、域名、指纹依据，比如 newapi / sub2 / dashboard / 公开接口" />
         </div>
         <div class="chip-row">
-          <button class="quick-chip" type="button" data-chip="深度识别为 newapi">深度识别为 NewAPI <span>36</span></button><button class="quick-chip" type="button" data-chip="深度识别为 sub2api">深度识别为 Sub2API <span>55</span></button><button class="quick-chip" type="button" data-chip="非这两类">非这两类 <span>15</span></button><button class="quick-chip" type="button" data-chip="待人工确认">待人工确认 <span>2</span></button><button class="quick-chip" type="button" data-chip="探测失败">探测失败 <span>44</span></button>
+          <button class="quick-chip" type="button" data-chip="我的常用">我的常用 <span>4</span></button><button class="quick-chip" type="button" data-chip="深度识别为 newapi">深度识别为 NewAPI <span>25</span></button><button class="quick-chip" type="button" data-chip="深度识别为 sub2api">深度识别为 Sub2API <span>40</span></button><button class="quick-chip" type="button" data-chip="公益站">公益站 <span>3</span></button><button class="quick-chip" type="button" data-chip="比价站">比价站 <span>2</span></button><button class="quick-chip" type="button" data-chip="非这两类">非这两类 <span>8</span></button><button class="quick-chip" type="button" data-chip="待人工确认">待人工确认 <span>2</span></button>
         </div>
       </div>
       <div id="statusPanel" class="status-panel">
         <div>
-          <strong>152</strong>
+          <strong>84</strong>
           <span>当前展示链接</span>
         </div>
-        <div>分布在 5 个分组</div>
+        <div>分布在 7 个分组</div>
       </div>
     </section>
-
     <section id="sectionStack" class="stack">
-      <section class="resource-section" data-group="深度识别为 newapi">
-              <div class="section-head">
-                <div class="section-copy">
-                  <h2>深度识别为 NewAPI</h2>
-                  <p>命中 NewAPI 公开接口或前端强指纹，优先可直接用。</p>
-                </div>
-                <span>36 个链接</span>
-              </div>
-              <div class="resource-grid">
-                <a class="resource-card" href="https://aibijia.org/" target="_blank" rel="noopener noreferrer">
+<section class="resource-section" data-group="我的常用">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>我的常用</h2>
+              <p>你平时高频打开的站点，固定置顶，优先给你最快找到。</p>
+            </div>
+            <span>4 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" data-favorite-tone="0" href="https://www.codex2api.com/keys" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
-                    <span class="resource-domain">aibijia.org</span>
+                    <span class="resource-domain">www.codex2api.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>Aibijia — AI 订阅，一键比价</strong>
-                  <span class="resource-url">https://aibijia.org/</span>
+                  <div class="resource-meta"><span class="platform-badge is-favorite">我的常用</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">我的常用</span><span class="assessment-chip is-risk">常用置顶</span></div>
+                  <strong>Codex2API - API 密钥</strong>
+                  <span class="resource-url">https://www.codex2api.com/keys</span>
+                  <span class="resource-reason">人工校正: pinned favorite codex2api</span>
+                </a><a class="resource-card" data-favorite-tone="1" href="https://zhuozaiya.top/dashboard" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">zhuozaiya.top</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-favorite">我的常用</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">我的常用</span><span class="assessment-chip is-risk">常用置顶</span></div>
+                  <strong>仪表盘 - 桌崽呀</strong>
+                  <span class="resource-url">https://zhuozaiya.top/dashboard</span>
+                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
+                </a><a class="resource-card" data-favorite-tone="2" href="https://openai945.cn/recharge" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">openai945.cn</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-favorite">我的常用</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">我的常用</span><span class="assessment-chip is-risk">常用置顶</span></div>
+                  <strong>加入合购 - WeShare</strong>
+                  <span class="resource-url">https://openai945.cn/recharge</span>
+                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
+                </a><a class="resource-card" data-favorite-tone="3" href="https://aklhaode199.xyz/subscriptions" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">aklhaode199.xyz</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-favorite">我的常用</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">我的常用</span><span class="assessment-chip is-risk">常用置顶</span></div>
+                  <strong>我的订阅 - 阿卡丽站点</strong>
+                  <span class="resource-url">https://aklhaode199.xyz/subscriptions</span>
+                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
+                </a>
+          </div>
+        </section>
+      <section class="resource-section" data-group="深度识别为 newapi">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>深度识别为 NewAPI</h2>
+              <p>命中 NewAPI 公开接口或前端强指纹，优先可直接用。</p>
+            </div>
+            <span>25 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" href="https://4router.net/console/topup" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">4router.net</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
+                  <strong>4Router</strong>
+                  <span class="resource-url">https://4router.net/console/topup</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://iliu.ai/console/playground" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">iliu.ai</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>AI实验室 - 心流</strong>
                   <span class="resource-url">https://iliu.ai/console/playground</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://gpt.bjqdtd.com/console/token" target="_blank" rel="noopener noreferrer">
+                </a><a class="resource-card" href="https://zhilianapi.com/console/playground" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
-                    <span class="resource-domain">gpt.bjqdtd.com</span>
+                    <span class="resource-domain">zhilianapi.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>BJ-GPT公益站</strong>
-                  <span class="resource-url">https://gpt.bjqdtd.com/console/token</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://aicodelink.top/" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
+                  <strong>AI实验室 - 智链API</strong>
+                  <span class="resource-url">https://zhilianapi.com/console/playground</span>
+                  <span class="resource-reason">人工校正: user-corrected newapi</span>
+                </a><a class="resource-card" href="https://linoapi.com.cn/pricing?provider=Grok+%28xAI%29&amp;category=%E9%9F%B3%E8%A7%86%E9%A2%91" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
-                    <span class="resource-domain">aicodelink.top</span>
+                    <span class="resource-domain">linoapi.com.cn</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>Code Link</strong>
-                  <span class="resource-url">https://aicodelink.top/</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
+                  <strong>API模型价格 - Lino API</strong>
+                  <span class="resource-url">https://linoapi.com.cn/pricing?provider=Grok+%28xAI%29&amp;category=%E9%9F%B3%E8%A7%86%E9%A2%91</span>
+                  <span class="resource-reason">人工校正: user-corrected newapi</span>
                 </a><a class="resource-card" href="https://aicodelink.top/console" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">aicodelink.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Code Link</strong>
                   <span class="resource-url">https://aicodelink.top/console</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://my.feishu.cn/wiki/LcqbwboLbiY4k9kAelbcJpqhnZb" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">my.feishu.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>codex转发 - 飞书云文档</strong>
-                  <span class="resource-url">https://my.feishu.cn/wiki/LcqbwboLbiY4k9kAelbcJpqhnZb</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://cybertruckai.top/console/topup" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">cybertruckai.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>CybertruckAI</strong>
                   <span class="resource-url">https://cybertruckai.top/console/topup</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -650,7 +1238,7 @@
                     <span class="resource-domain">ddd666api.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>ddd666API</strong>
                   <span class="resource-url">https://ddd666api.com/pricing</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -659,7 +1247,7 @@
                     <span class="resource-domain">jucodex.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>JuCodex</strong>
                   <span class="resource-url">https://jucodex.com/console/topup</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -668,34 +1256,34 @@
                     <span class="resource-domain">maolaoapi.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>MaoLao API</strong>
                   <span class="resource-url">https://maolaoapi.com/console/playground</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://matrix.000328.xyz/rankings" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">matrix.000328.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>Matrix</strong>
-                  <span class="resource-url">https://matrix.000328.xyz/rankings</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://mintapi.cn/panel/dashboard" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">mintapi.cn</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Mint API</strong>
                   <span class="resource-url">https://mintapi.cn/panel/dashboard</span>
+                  <span class="resource-reason">命中公开接口 /api/status</span>
+                </a><a class="resource-card" href="https://api.duolapi.cn/console/topup" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">api.duolapi.cn</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
+                  <strong>New API</strong>
+                  <span class="resource-url">https://api.duolapi.cn/console/topup</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://api.gemai.cc/console/playground" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">api.gemai.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>New API</strong>
                   <span class="resource-url">https://api.gemai.cc/console/playground</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -704,52 +1292,34 @@
                     <span class="resource-domain">geek.tm2.xin</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>New API</strong>
                   <span class="resource-url">https://geek.tm2.xin/console</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://relayai.tech/console/playground" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">relayai.tech</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>New API</strong>
-                  <span class="resource-url">https://relayai.tech/console/playground</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://api.duolapi.cn/console/topup" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.duolapi.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>New API</strong>
-                  <span class="resource-url">https://api.duolapi.cn/console/topup</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://qianxi7988.me/console/token" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">qianxi7988.me</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>New API</strong>
                   <span class="resource-url">https://qianxi7988.me/console/token</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://docs.newapi.pro/zh" target="_blank" rel="noopener noreferrer">
+                </a><a class="resource-card" href="https://relayai.tech/console/playground" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
-                    <span class="resource-domain">docs.newapi.pro</span>
+                    <span class="resource-domain">relayai.tech</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 13</span></div>
-                  <strong>New API - AI 基座</strong>
-                  <span class="resource-url">https://docs.newapi.pro/zh</span>
-                  <span class="resource-reason">标题指纹: new api - ai 基座 | NewAPI 标记: newapi | 域名中包含 newapi</span>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
+                  <strong>New API</strong>
+                  <span class="resource-url">https://relayai.tech/console/playground</span>
+                  <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://apibest.ai/console?lng=zh-CN" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">apibest.ai</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>OpenAI、Claude 与 Gemini，一个接口，更便宜更省心。 | Best API</strong>
                   <span class="resource-url">https://apibest.ai/console?lng=zh-CN</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -758,7 +1328,7 @@
                     <span class="resource-domain">newapi.prorisehub.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Pro API</strong>
                   <span class="resource-url">https://newapi.prorisehub.com/keys</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -767,7 +1337,7 @@
                     <span class="resource-domain">user.tocodex.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>ToCodex</strong>
                   <span class="resource-url">https://user.tocodex.com/console</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -776,88 +1346,34 @@
                     <span class="resource-domain">web.zppai.cn</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 4</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 4</span><span class="assessment-chip is-trust-low">待复核 52</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">证据较少</span></div>
                   <strong>web.zppai.cn/zh/dashboard</strong>
                   <span class="resource-url">https://web.zppai.cn/zh/dashboard</span>
                   <span class="resource-reason">NewAPI 标记: api keys | NewAPI 路径: /zh/dashboard</span>
-                </a><a class="resource-card" href="https://app.wandayun.com/console" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">app.wandayun.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>万达云加速器 - 全球加密隧道服务商 | 万达云官网</strong>
-                  <span class="resource-url">https://app.wandayun.com/console</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://iliu.ai/affiliate" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">iliu.ai</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>代理加盟 - 心流</strong>
-                  <span class="resource-url">https://iliu.ai/affiliate</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://www.aigeek.life/console/token" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">aigeek.life</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>令牌管理 - AI 极客</strong>
                   <span class="resource-url">https://www.aigeek.life/console/token</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://iliu.ai/console/topup" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">iliu.ai</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>充值中心 - 心流</strong>
-                  <span class="resource-url">https://iliu.ai/console/topup</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://pro.gemai.cc/console/token" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">pro.gemai.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>哈基米 Pro</strong>
                   <span class="resource-url">https://pro.gemai.cc/console/token</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://xiangzili.xyz/item/30" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">xiangzili.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>排队现搓 试用账号Plus 订阅一个月 GPT Plus 需要有试用资格的账号（很简单的 CDK兑换页面有教程获取试用资格号） 过试用后可一键导入Codex 到cockpit tools 和 CPA - AI杂货铺</strong>
-                  <span class="resource-url">https://xiangzili.xyz/item/30</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://fushengyunsuan.cn/keys" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">fushengyunsuan.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>浮生云算</strong>
-                  <span class="resource-url">https://fushengyunsuan.cn/keys</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://www.codexeasy.com/console/user-dashboard" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">codexeasy.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>用户仪表盘 - Codex Easy</strong>
-                  <span class="resource-url">https://www.codexeasy.com/console/user-dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
                 </a><a class="resource-card" href="https://api.chshapi.org/console/playground" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">api.chshapi.org</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>监控室大爷模拟器</strong>
                   <span class="resource-url">https://api.chshapi.org/console/playground</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -866,7 +1382,7 @@
                     <span class="resource-domain">micuapi.ai</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>米醋API</strong>
                   <span class="resource-url">https://www.micuapi.ai/console/playground</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -875,7 +1391,7 @@
                     <span class="resource-domain">vsllm.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>维云模型开放平台</strong>
                   <span class="resource-url">https://vsllm.com/</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
@@ -884,63 +1400,27 @@
                     <span class="resource-domain">api.aisz.mom</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>词元枢阁 Token Nexus</strong>
                   <span class="resource-url">https://api.aisz.mom/keys</span>
                   <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://api.aisz.mom/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.aisz.mom</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>词元枢阁 Token Nexus</strong>
-                  <span class="resource-url">https://api.aisz.mom/</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
-                </a><a class="resource-card" href="https://ai.runningrun.org/cat/2" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">ai.runningrun.org</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-newapi">深度识别为 NewAPI</span><span class="resource-score">score 12</span></div>
-                  <strong>购物 - 异次元店铺</strong>
-                  <span class="resource-url">https://ai.runningrun.org/cat/2</span>
-                  <span class="resource-reason">命中公开接口 /api/status</span>
                 </a>
-              </div>
-            </section><section class="resource-section" data-group="深度识别为 sub2api">
-              <div class="section-head">
-                <div class="section-copy">
-                  <h2>深度识别为 Sub2API</h2>
-                  <p>命中 Sub2API 公开接口或前端强指纹，优先可直接筛。</p>
-                </div>
-                <span>55 个链接</span>
-              </div>
-              <div class="resource-grid">
-                <a class="resource-card" href="https://www.tokenx24.com/ai-image" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">tokenx24.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>AI 绘图 - TokenX24</strong>
-                  <span class="resource-url">https://www.tokenx24.com/ai-image</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://zhilianapi.com/console/playground" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">zhilianapi.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 4</span></div>
-                  <strong>AI实验室 - 智链API</strong>
-                  <span class="resource-url">https://zhilianapi.com/console/playground</span>
-                  <span class="resource-reason">Sub2API 标记: subscription | Sub2API 路径: /subscriptions</span>
-                </a><a class="resource-card" href="https://www.heiyucode.com/keys" target="_blank" rel="noopener noreferrer">
+          </div>
+        </section><section class="resource-section" data-group="深度识别为 sub2api">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>深度识别为 Sub2API</h2>
+              <p>命中 Sub2API 公开接口或前端强指纹，优先可直接筛。</p>
+            </div>
+            <span>40 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" href="https://www.heiyucode.com/keys" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">heiyucode.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API Keys - HeiyùCode</strong>
                   <span class="resource-url">https://www.heiyucode.com/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -949,7 +1429,7 @@
                     <span class="resource-domain">api.owiwo.cn</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - Ac api</strong>
                   <span class="resource-url">https://api.owiwo.cn/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -958,7 +1438,7 @@
                     <span class="resource-domain">fululai.cn</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - fululai</strong>
                   <span class="resource-url">https://fululai.cn/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -967,7 +1447,7 @@
                     <span class="resource-domain">api.nttd.ca</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - NTTD AI HOST</strong>
                   <span class="resource-url">https://api.nttd.ca/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -976,25 +1456,16 @@
                     <span class="resource-domain">api.pinai.icu</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - PinAI API</strong>
                   <span class="resource-url">https://api.pinai.icu/keys</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://ai.td.ee/keys" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">ai.td.ee</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>API 密钥 - 哈基米公益站</strong>
-                  <span class="resource-url">https://ai.td.ee/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a><a class="resource-card" href="https://api.hangzhale.com/keys" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">api.hangzhale.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - 夯炸了</strong>
                   <span class="resource-url">https://api.hangzhale.com/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1003,7 +1474,7 @@
                     <span class="resource-domain">panel.hanhegufei.online</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - 寒鹤的小破站</strong>
                   <span class="resource-url">https://panel.hanhegufei.online/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1012,25 +1483,16 @@
                     <span class="resource-domain">api.ranmeng.icu</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">Key 管理</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - 江湖驿站</strong>
                   <span class="resource-url">https://api.ranmeng.icu/keys</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://linoapi.com.cn/pricing?provider=Grok+%28xAI%29&amp;category=%E9%9F%B3%E8%A7%86%E9%A2%91" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">linoapi.com.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 4</span></div>
-                  <strong>API模型价格 - Lino API</strong>
-                  <span class="resource-url">https://linoapi.com.cn/pricing?provider=Grok+%28xAI%29&amp;category=%E9%9F%B3%E8%A7%86%E9%A2%91</span>
-                  <span class="resource-reason">Sub2API 标记: subscription | Sub2API 路径: /subscriptions</span>
                 </a><a class="resource-card" href="https://kuai.fastdmx.top/home" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">kuai.fastdmx.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Home - fastdmx</strong>
                   <span class="resource-url">https://kuai.fastdmx.top/home</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1039,61 +1501,25 @@
                     <span class="resource-domain">icoe.pp.ua</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>icoe.pp.ua | 502: Bad gateway</strong>
                   <span class="resource-url">https://icoe.pp.ua/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://resourify.com/resources/google-antigravity" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">resourify.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 6</span></div>
-                  <strong>Increase Your Google Antigravity Limits for Free (Official Method) – Resourify</strong>
-                  <span class="resource-url">https://resourify.com/resources/google-antigravity</span>
-                  <span class="resource-reason">Sub2API 标记: affiliate | Sub2API 标记: workspace</span>
-                </a><a class="resource-card" href="https://www.heiyucode.com/shop" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">heiyucode.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>Purchase Subscription - HeiyùCode</strong>
-                  <span class="resource-url">https://www.heiyucode.com/shop</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://aicoding.csdn.net/69213e5282fbe0098cadc611.html" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">aicoding.csdn.net</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 4</span></div>
-                  <strong>【保姆级教程】Win11 下从零部署 Claude Code：本地环境配置 + VSCode 可视化界面全流程指南_vscode_古鱼复苏ζ-AI编程社区</strong>
-                  <span class="resource-url">https://aicoding.csdn.net/69213e5282fbe0098cadc611.html</span>
-                  <span class="resource-reason">Sub2API 标记: subscription | Sub2API 路径: /subscriptions</span>
                 </a><a class="resource-card" href="https://ccbus.top/profile" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">ccbus.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>个人设置 - AI 巴士</strong>
                   <span class="resource-url">https://ccbus.top/profile</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://ai.qicunshang.com/profile" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">ai.qicunshang.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>个人设置 - QICun</strong>
-                  <span class="resource-url">https://ai.qicunshang.com/profile</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a><a class="resource-card" href="https://api.siiy.pp.ua/profile" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">api.siiy.pp.ua</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>个人设置 - 思益API中转站</strong>
                   <span class="resource-url">https://api.siiy.pp.ua/profile</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1102,7 +1528,7 @@
                     <span class="resource-domain">codex.ciii.club</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - Ciii Codex</strong>
                   <span class="resource-url">https://codex.ciii.club/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1111,7 +1537,7 @@
                     <span class="resource-domain">api.20240325.xyz</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - CloudApi</strong>
                   <span class="resource-url">https://api.20240325.xyz/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1120,7 +1546,7 @@
                     <span class="resource-domain">gpt.eacase.de5.net</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - Galaxy - 银河</strong>
                   <span class="resource-url">https://gpt.eacase.de5.net/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1129,7 +1555,7 @@
                     <span class="resource-domain">jarlessapi.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - JarlessAPI</strong>
                   <span class="resource-url">https://jarlessapi.com/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1138,7 +1564,7 @@
                     <span class="resource-domain">ai.gs88.shop</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - Link API</strong>
                   <span class="resource-url">https://ai.gs88.shop/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1147,7 +1573,7 @@
                     <span class="resource-domain">2api.qhook.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - Sub2API</strong>
                   <span class="resource-url">https://2api.qhook.top/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1156,25 +1582,16 @@
                     <span class="resource-domain">inroi.shop</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - 小蓝AI旗舰服务站</strong>
                   <span class="resource-url">https://www.inroi.shop/dashboard</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://zhuozaiya.top/dashboard" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">zhuozaiya.top</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>仪表盘 - 桌崽呀</strong>
-                  <span class="resource-url">https://zhuozaiya.top/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a><a class="resource-card" href="https://cc.ycyinhui.top/dashboard" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">cc.ycyinhui.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - 银汇AI</strong>
                   <span class="resource-url">https://cc.ycyinhui.top/dashboard</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1183,34 +1600,16 @@
                     <span class="resource-domain">hub.ccttt99.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>仪表盘 - 青蛙中转</strong>
                   <span class="resource-url">https://hub.ccttt99.com/dashboard</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://icoe.pp.ua/custom/c60ccec680190658" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">icoe.pp.ua</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>余额充值 - 冰のCodex</strong>
-                  <span class="resource-url">https://icoe.pp.ua/custom/c60ccec680190658</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://api.owiwo.cn/usage" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.owiwo.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>使用记录 - Ac api</strong>
-                  <span class="resource-url">https://api.owiwo.cn/usage</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a><a class="resource-card" href="https://hivewa.store/usage" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">hivewa.store</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">用量入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>使用记录 - JingAPI</strong>
                   <span class="resource-url">https://hivewa.store/usage</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1219,7 +1618,7 @@
                     <span class="resource-domain">aiwanwu.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>充值/订阅 - AI 万物</strong>
                   <span class="resource-url">https://aiwanwu.cc/purchase</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1228,7 +1627,7 @@
                     <span class="resource-domain">openaidns.net</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>充值/订阅 - AIdns</strong>
                   <span class="resource-url">https://www.openaidns.net/purchase</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1237,7 +1636,7 @@
                     <span class="resource-domain">api.055298.xyz</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>充值/订阅 - IK Code</strong>
                   <span class="resource-url">https://api.055298.xyz/purchase</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1246,7 +1645,7 @@
                     <span class="resource-domain">lgopenai.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>充值/订阅 - LGOpenAi</strong>
                   <span class="resource-url">https://lgopenai.top/purchase</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1255,25 +1654,16 @@
                     <span class="resource-domain">ai.qicunshang.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>充值/订阅 - QICun</strong>
                   <span class="resource-url">https://ai.qicunshang.com/purchase</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://api.hangzhale.com/purchase" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.hangzhale.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>充值/订阅 - 夯炸了</strong>
-                  <span class="resource-url">https://api.hangzhale.com/purchase</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a><a class="resource-card" href="https://datatoken.shop/custom/5573e240ca194e2b" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">datatoken.shop</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>充值点击跳转 - datatoken</strong>
                   <span class="resource-url">https://datatoken.shop/custom/5573e240ca194e2b</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1282,7 +1672,7 @@
                     <span class="resource-domain">aixj.vip</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>兑换码 - AI新境</strong>
                   <span class="resource-url">https://aixj.vip/redeem</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1291,7 +1681,7 @@
                     <span class="resource-domain">momo2.mom</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>兑换码 - momo2</strong>
                   <span class="resource-url">https://momo2.mom/redeem</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1300,7 +1690,7 @@
                     <span class="resource-domain">wangwang.sbs</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>兑换码 - Sub2API</strong>
                   <span class="resource-url">https://wangwang.sbs/redeem</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1309,7 +1699,7 @@
                     <span class="resource-domain">codex.kitt.tools</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>兑换码 - 号比人多</strong>
                   <span class="resource-url">https://codex.kitt.tools/redeem</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1318,25 +1708,25 @@
                     <span class="resource-domain">api.codeera.cn</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>创建账户 - Codeera API</strong>
                   <span class="resource-url">https://api.codeera.cn/register</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://openai945.cn/recharge" target="_blank" rel="noopener noreferrer">
+                </a><a class="resource-card" href="https://yostoken.top/dashboard" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
-                    <span class="resource-domain">openai945.cn</span>
+                    <span class="resource-domain">yostoken.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>加入合购 - WeShare</strong>
-                  <span class="resource-url">https://openai945.cn/recharge</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
+                  <strong>哟词元 - 仪表盘</strong>
+                  <span class="resource-url">https://yostoken.top/dashboard</span>
+                  <span class="resource-reason">人工校正: user-added sub2 entry</span>
                 </a><a class="resource-card" href="https://www.woaigptai.com/subscriptions" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">woaigptai.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>我的订阅 - alangai</strong>
                   <span class="resource-url">https://www.woaigptai.com/subscriptions</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1345,7 +1735,7 @@
                     <span class="resource-domain">admin.handsfreeclub.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>我的订阅 - Handsfree Club</strong>
                   <span class="resource-url">https://admin.handsfreeclub.com/subscriptions</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1354,43 +1744,16 @@
                     <span class="resource-domain">2btocken.xyz</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>我的订阅 - MaxAPI</strong>
                   <span class="resource-url">https://2btocken.xyz/subscriptions</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://aklhaode199.xyz/subscriptions" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">aklhaode199.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>我的订阅 - 阿卡丽站点</strong>
-                  <span class="resource-url">https://aklhaode199.xyz/subscriptions</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://yaoshanapi.com/documentation" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">yaoshanapi.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>文档指南 - 耀闪API</strong>
-                  <span class="resource-url">https://yaoshanapi.com/documentation</span>
-                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
-                </a><a class="resource-card" href="https://aiwanwu.cc/monitor" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">aiwanwu.cc</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
-                  <strong>渠道状态 - AI 万物</strong>
-                  <span class="resource-url">https://aiwanwu.cc/monitor</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a><a class="resource-card" href="https://ai.deltax.online/monitor" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">ai.deltax.online</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>渠道状态 - 寻链AI</strong>
                   <span class="resource-url">https://ai.deltax.online/monitor</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1399,7 +1762,7 @@
                     <span class="resource-domain">modelverse.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>邀请返利 - ModelVerse</strong>
                   <span class="resource-url">https://modelverse.top/affiliate</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
@@ -1408,54 +1771,103 @@
                     <span class="resource-domain">ccode.dev</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-sub2">深度识别为 Sub2API</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">用量入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>钱包中心 - Ccode</strong>
                   <span class="resource-url">https://www.ccode.dev/wallet</span>
                   <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
                 </a>
-              </div>
-            </section><section class="resource-section" data-group="非这两类">
-              <div class="section-head">
-                <div class="section-copy">
-                  <h2>非这两类</h2>
-                  <p>已人工排除或明显属于其他自建/信息站，不再混进目标池。</p>
-                </div>
-                <span>15 个链接</span>
-              </div>
-              <div class="resource-grid">
-                <a class="resource-card" href="https://anyrouter.top/pricing" target="_blank" rel="noopener noreferrer">
+          </div>
+        </section><section class="resource-section" data-group="公益站">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>公益站</h2>
+              <p>这类站点更偏向签到、积分、白嫖额度或低门槛拿量，适合单独观察。</p>
+            </div>
+            <span>3 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" href="https://anyrouter.top/pricing" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">anyrouter.top</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-review">公益站</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">公益入口</span><span class="assessment-chip is-risk">签到/积分型</span></div>
                   <strong>Any Router</strong>
                   <span class="resource-url">https://anyrouter.top/pricing</span>
                   <span class="resource-reason">人工校正: pricing page custom router</span>
-                </a><a class="resource-card" href="https://pucoding.com/dashboard/api-keys" target="_blank" rel="noopener noreferrer">
+                </a><a class="resource-card" href="https://ai.td.ee/keys" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">ai.td.ee</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-review">公益站</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">公益入口</span><span class="assessment-chip is-risk">签到/积分型</span></div>
+                  <strong>API 密钥 - 哈基米公益站</strong>
+                  <span class="resource-url">https://ai.td.ee/keys</span>
+                  <span class="resource-reason">命中公开接口 /api/v1/settings/public</span>
+                </a><a class="resource-card" href="https://gpt.bjqdtd.com/console/token" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">gpt.bjqdtd.com</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-review">公益站</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">公益入口</span><span class="assessment-chip is-risk">签到/积分型</span></div>
+                  <strong>BJ-GPT公益站</strong>
+                  <span class="resource-url">https://gpt.bjqdtd.com/console/token</span>
+                  <span class="resource-reason">命中公开接口 /api/status</span>
+                </a>
+          </div>
+        </section><section class="resource-section" data-group="比价站">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>比价站</h2>
+              <p>这类站点更适合拿来横向对比套餐、模型和价格，不一定是最终使用入口。</p>
+            </div>
+            <span>2 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" href="https://aibijia.org/" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">aibijia.org</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-other">比价站</span><span class="resource-score">score 12</span><span class="assessment-chip is-trust-high">高可信 90</span><span class="assessment-chip is-entry">比价入口</span><span class="assessment-chip is-risk">聚合比价</span></div>
+                  <strong>Aibijia — AI 订阅，一键比价</strong>
+                  <span class="resource-url">https://aibijia.org/</span>
+                  <span class="resource-reason">命中公开接口 /api/status</span>
+                </a><a class="resource-card" href="https://oken.ai/" target="_blank" rel="noopener noreferrer">
+                  <div class="resource-top">
+                    <span class="resource-domain">oken.ai</span>
+                    <span class="resource-open">Open</span>
+                  </div>
+                  <div class="resource-meta"><span class="platform-badge is-other">比价站</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">比价入口</span><span class="assessment-chip is-risk">聚合比价</span></div>
+                  <strong>Oken.ai</strong>
+                  <span class="resource-url">https://oken.ai/</span>
+                  <span class="resource-reason">人工校正: price comparison site</span>
+                </a>
+          </div>
+        </section><section class="resource-section" data-group="非这两类">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>非这两类</h2>
+              <p>已人工排除或明显属于其他自建/信息站，不再混进目标池。</p>
+            </div>
+            <span>8 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" href="https://pucoding.com/dashboard/api-keys" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">pucoding.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>API 密钥 - Pucoding</strong>
                   <span class="resource-url">https://pucoding.com/dashboard/api-keys</span>
                   <span class="resource-reason">人工校正: pucoding custom relay</span>
-                </a><a class="resource-card" href="https://clearaigc.com/c/chatgpt" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">clearaigc.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
-                  <strong>ChatGPT — 棱镜</strong>
-                  <span class="resource-url">https://clearaigc.com/c/chatgpt</span>
-                  <span class="resource-reason">人工校正: clearaigc discovery site</span>
                 </a><a class="resource-card" href="https://freemodel.dev/dashboard/logs" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">freemodel.dev</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Codex GPT-5.5 中转API</strong>
                   <span class="resource-url">https://freemodel.dev/dashboard/logs</span>
                   <span class="resource-reason">人工校正: freemodel custom relay</span>
@@ -1464,7 +1876,7 @@
                     <span class="resource-domain">hoviwcode.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Hoviw</strong>
                   <span class="resource-url">https://hoviwcode.cc/dashboard</span>
                   <span class="resource-reason">人工校正: aether custom relay</span>
@@ -1473,61 +1885,25 @@
                     <span class="resource-domain">terminal.pub</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>New API</strong>
                   <span class="resource-url">https://terminal.pub/</span>
                   <span class="resource-reason">人工校正: custom relay gateway</span>
-                </a><a class="resource-card" href="https://nvtokens.com/workspace" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">nvtokens.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
-                  <strong>NexusVault 号池交易台</strong>
-                  <span class="resource-url">https://nvtokens.com/workspace</span>
-                  <span class="resource-reason">人工校正: nexusvault trading platform</span>
-                </a><a class="resource-card" href="https://oken.ai/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">oken.ai</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
-                  <strong>Oken.ai</strong>
-                  <span class="resource-url">https://oken.ai/</span>
-                  <span class="resource-reason">人工校正: price comparison site</span>
-                </a><a class="resource-card" href="https://fk.520952.xyz/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">fk.520952.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
-                  <strong>orange店铺 - 最适合你的个人店铺系统！</strong>
-                  <span class="resource-url">https://fk.520952.xyz/</span>
-                  <span class="resource-reason">人工校正: shop site</span>
                 </a><a class="resource-card" href="https://www.right.codes/models" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">right.codes</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">模型入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>Right Code - 企业级 AI Agent 中转平台</strong>
                   <span class="resource-url">https://www.right.codes/models</span>
-                  <span class="resource-reason">人工校正: right-code custom relay</span>
-                </a><a class="resource-card" href="https://www.right.codes/home" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">right.codes</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
-                  <strong>Right Code - 企业级 AI Agent 中转平台</strong>
-                  <span class="resource-url">https://www.right.codes/home</span>
                   <span class="resource-reason">人工校正: right-code custom relay</span>
                 </a><a class="resource-card" href="https://codex.miaomiaocode.com/purchase" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">codex.miaomiaocode.com</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">购买入口</span><span class="assessment-chip is-risk">偏购买入口</span></div>
                   <strong>免费 Claude API、免费 GPT API、免费 Gemini API | Codex API Gateway</strong>
                   <span class="resource-url">https://codex.miaomiaocode.com/purchase</span>
                   <span class="resource-reason">人工校正: miaomiaocode custom relay</span>
@@ -1536,7 +1912,7 @@
                     <span class="resource-domain">univibe.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>控制台 - UniVibe</strong>
                   <span class="resource-url">https://www.univibe.cc/console/</span>
                   <span class="resource-reason">人工校正: univibe custom relay</span>
@@ -1545,36 +1921,27 @@
                     <span class="resource-domain">foxcode.rjj.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span><span class="assessment-chip is-trust-high">高可信 100</span><span class="assessment-chip is-entry">用量入口</span><span class="assessment-chip is-risk">低风险</span></div>
                   <strong>登录中 - NEW CLI</strong>
                   <span class="resource-url">https://foxcode.rjj.cc/usage</span>
                   <span class="resource-reason">人工校正: new-cli custom relay</span>
-                </a><a class="resource-card" href="https://ztest.ai/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">ztest.ai</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-other">非这两类</span><span class="resource-score">score 99</span></div>
-                  <strong>真测 Ztest — AI 中转站可信度验证</strong>
-                  <span class="resource-url">https://ztest.ai/</span>
-                  <span class="resource-reason">人工校正: relay verification site</span>
                 </a>
-              </div>
-            </section><section class="resource-section" data-group="待人工确认">
-              <div class="section-head">
-                <div class="section-copy">
-                  <h2>待人工确认</h2>
-                  <p>有少量特征，但还不够稳，适合你二次扫一遍。</p>
-                </div>
-                <span>2 个链接</span>
-              </div>
-              <div class="resource-grid">
-                <a class="resource-card" href="https://dc.hhhl.cc/panel/#/image2" target="_blank" rel="noopener noreferrer">
+          </div>
+        </section><section class="resource-section" data-group="待人工确认">
+          <div class="section-head">
+            <div class="section-copy">
+              <h2>待人工确认</h2>
+              <p>有少量特征，但还不够稳，适合你二次扫一遍。</p>
+            </div>
+            <span>2 个链接</span>
+          </div>
+          <div class="resource-grid">
+            <a class="resource-card" href="https://dc.hhhl.cc/panel/#/image2" target="_blank" rel="noopener noreferrer">
                   <div class="resource-top">
                     <span class="resource-domain">dc.hhhl.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-review">待人工确认</span><span class="resource-score">score 1</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-review">待人工确认</span><span class="resource-score">score 1</span><span class="assessment-chip is-trust-risk">高风险 20</span><span class="assessment-chip is-entry">控制台入口</span><span class="assessment-chip is-risk">特征偏弱</span></div>
                   <strong>AIng</strong>
                   <span class="resource-url">https://dc.hhhl.cc/panel/#/image2</span>
                   <span class="resource-reason">NewAPI 路径: /panel/</span>
@@ -1583,420 +1950,13 @@
                     <span class="resource-domain">new.sharedchat.cc</span>
                     <span class="resource-open">Open</span>
                   </div>
-                  <div class="resource-meta"><span class="platform-badge is-review">待人工确认</span><span class="resource-score">score 1</span></div>
+                  <div class="resource-meta"><span class="platform-badge is-review">待人工确认</span><span class="resource-score">score 1</span><span class="assessment-chip is-trust-risk">高风险 10</span><span class="assessment-chip is-entry">站点首页</span><span class="assessment-chip is-risk">特征偏弱</span></div>
                   <strong>Attention Required! | Cloudflare</strong>
                   <span class="resource-url">https://new.sharedchat.cc/list/#/vibe-code/dashboard?activeMenu=tutorial</span>
                   <span class="resource-reason">NewAPI 路径: /dashboard</span>
                 </a>
-              </div>
-            </section><section class="resource-section" data-group="探测失败">
-              <div class="section-head">
-                <div class="section-copy">
-                  <h2>探测失败</h2>
-                  <p>当前无法完成探测，可能是站点挂了、拦截了请求，或首页太干净。</p>
-                </div>
-                <span>44 个链接</span>
-              </div>
-              <div class="resource-grid">
-                <a class="resource-card" href="https://api.7clong.net/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.7clong.net</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>7c loon API | 用户核心中心</strong>
-                  <span class="resource-url">https://api.7clong.net/</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://pay.ldxp.cn/shop/ccbus" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pay.ldxp.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>AI 巴士的小店 - 链动小铺</strong>
-                  <span class="resource-url">https://pay.ldxp.cn/shop/ccbus</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://uniform.wingzero.tw/zh-TW/prompts" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">uniform.wingzero.tw</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>AI 提示詞資料庫 | UniForme 制服誌</strong>
-                  <span class="resource-url">https://uniform.wingzero.tw/zh-TW/prompts</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://pay.ldxp.cn/shop/TWRYRR7X" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pay.ldxp.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>AI 新境的小店 - 链动小铺</strong>
-                  <span class="resource-url">https://pay.ldxp.cn/shop/TWRYRR7X</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://pay.ldxp.cn/shop/CodexBro" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pay.ldxp.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>AI 源头旗舰店的小店 - 链动小铺</strong>
-                  <span class="resource-url">https://pay.ldxp.cn/shop/CodexBro</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://pay.ldxp.cn/shop/QSRW5Y4U" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pay.ldxp.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>AI-续杯神器（cursor-infinity官方授权商铺）的小店 - 链动小铺</strong>
-                  <span class="resource-url">https://pay.ldxp.cn/shop/QSRW5Y4U</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="http://192.168.0.68:3001/teacher" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">192.168.0.68:3001</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>AI智学云-教育平台</strong>
-                  <span class="resource-url">http://192.168.0.68:3001/teacher</span>
-                  <span class="resource-reason">HTTP Error 502: Bad Gateway</span>
-                </a><a class="resource-card" href="https://codex.adsence.tech/keys" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">codex.adsence.tech</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>API 密钥 - CodexAPI</strong>
-                  <span class="resource-url">https://codex.adsence.tech/keys</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://lucky-sub2api.zeabur.app/keys" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">lucky-sub2api.zeabur.app</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>API 密钥 - lucky API</strong>
-                  <span class="resource-url">https://lucky-sub2api.zeabur.app/keys</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://www.msutools.cn/keys" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">msutools.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>API 密钥 - Msutools</strong>
-                  <span class="resource-url">https://www.msutools.cn/keys</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://cu.ns2e.com/keys" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">cu.ns2e.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>API 密钥 - ns2e</strong>
-                  <span class="resource-url">https://cu.ns2e.com/keys</span>
-                  <span class="resource-reason">&lt;urlopen error _ssl.c:1015: The handshake operation timed out&gt;</span>
-                </a><a class="resource-card" href="http://47.253.177.201:3000/admin-next/api-stats?apiId=7253f959-cb08-47bf-83c8-3e49778cabbc" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">47.253.177.201:3000</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>Claude Relay Service - 管理后台</strong>
-                  <span class="resource-url">http://47.253.177.201:3000/admin-next/api-stats?apiId=7253f959-cb08-47bf-83c8-3e49778cabbc</span>
-                  <span class="resource-reason">timed out</span>
-                </a><a class="resource-card" href="https://www.kdocs.cn/l/cdodlthJ9CYZ" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">kdocs.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>codex 中转站评测表</strong>
-                  <span class="resource-url">https://www.kdocs.cn/l/cdodlthJ9CYZ</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://codex.aixiaobo.cn/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">codex.aixiaobo.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>Codex 接码平台</strong>
-                  <span class="resource-url">https://codex.aixiaobo.cn/</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://docs.right.codes/docs/rc_questions/codex.html" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">docs.right.codes</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>Codex 相关疑问 | Right Code文档</strong>
-                  <span class="resource-url">https://docs.right.codes/docs/rc_questions/codex.html</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://hermesagent.org.cn/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">hermesagent.org.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>Hermes Agent 中文文档、安装教程与社区 | Hermes Agent 中文社区</strong>
-                  <span class="resource-url">https://hermesagent.org.cn/</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://xnova.harrisonx.icu/home" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">xnova.harrisonx.icu</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>Home - Xnova</strong>
-                  <span class="resource-url">https://xnova.harrisonx.icu/home</span>
-                  <span class="resource-reason">The read operation timed out</span>
-                </a><a class="resource-card" href="https://icodex.pro/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">icodex.pro</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>iCodeX.Pro 管理后台</strong>
-                  <span class="resource-url">https://icodex.pro/</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://cdn.jucode.cn/about" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">cdn.jucode.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>JuCode</strong>
-                  <span class="resource-url">https://cdn.jucode.cn/about</span>
-                  <span class="resource-reason">&lt;urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。&gt;</span>
-                </a><a class="resource-card" href="https://pay.ldxp.cn/shop/12P8XO9Z" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pay.ldxp.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>LToken的小店 - 链动小铺</strong>
-                  <span class="resource-url">https://pay.ldxp.cn/shop/12P8XO9Z</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://www.88ai.mobi/console/token" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">88ai.mobi</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>New API</strong>
-                  <span class="resource-url">https://www.88ai.mobi/console/token</span>
-                  <span class="resource-reason">&lt;urlopen error _ssl.c:1015: The handshake operation timed out&gt;</span>
-                </a><a class="resource-card" href="https://cn-api.liangrekui.com/console" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">cn-api.liangrekui.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>New API</strong>
-                  <span class="resource-url">https://cn-api.liangrekui.com/console</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="http://170.106.100.210:55555/console/token" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">170.106.100.210:55555</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>New API</strong>
-                  <span class="resource-url">http://170.106.100.210:55555/console/token</span>
-                  <span class="resource-reason">timed out</span>
-                </a><a class="resource-card" href="https://superapi.top/console/token" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">superapi.top</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>New API</strong>
-                  <span class="resource-url">https://superapi.top/console/token</span>
-                  <span class="resource-reason">&lt;urlopen error _ssl.c:1015: The handshake operation timed out&gt;</span>
-                </a><a class="resource-card" href="https://pixabay.com/sound-effects/search/speech%20sample/?pagi=3" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pixabay.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>Page 3 - Free Speech Sample Sound Effects Download - Pixabay</strong>
-                  <span class="resource-url">https://pixabay.com/sound-effects/search/speech%20sample/?pagi=3</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://anthropic.lhy.lat/dashboard" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">anthropic.lhy.lat</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>仪表盘 - Anthropic</strong>
-                  <span class="resource-url">https://anthropic.lhy.lat/dashboard</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for &#x27;anthropic.lhy.lat&#x27;. (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://529961.com/dashboard" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">529961.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>仪表盘 - Sub2API</strong>
-                  <span class="resource-url">https://529961.com/dashboard</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://niubi.nill.asia/sub2api/dashboard" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">niubi.nill.asia</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>仪表盘 - 阿卡丽站点</strong>
-                  <span class="resource-url">https://niubi.nill.asia/sub2api/dashboard</span>
-                  <span class="resource-reason">HTTP Error 403: Forbidden</span>
-                </a><a class="resource-card" href="https://sub2api.dearmer.xyz/usage" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">sub2api.dearmer.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>使用记录 - ApexAPI</strong>
-                  <span class="resource-url">https://sub2api.dearmer.xyz/usage</span>
-                  <span class="resource-reason">HTTP Error 525: &lt;none&gt;</span>
-                </a><a class="resource-card" href="https://api.bianok.xyz/purchase" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.bianok.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>充值/订阅 - Bianok API</strong>
-                  <span class="resource-url">https://api.bianok.xyz/purchase</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://yimo.one/purchase" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">yimo.one</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>充值/订阅 - Yimo-US</strong>
-                  <span class="resource-url">https://yimo.one/purchase</span>
-                  <span class="resource-reason">&lt;urlopen error _ssl.c:1015: The handshake operation timed out&gt;</span>
-                </a><a class="resource-card" href="https://sub2api.xmdp.top/purchase" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">sub2api.xmdp.top</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>充值/订阅 - 词元补给站</strong>
-                  <span class="resource-url">https://sub2api.xmdp.top/purchase</span>
-                  <span class="resource-reason">&lt;urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。&gt;</span>
-                </a><a class="resource-card" href="https://pay.ldxp.cn/shop/VNHE1W3U?u_atoken=69e58a83-104e-cb7e-426c-d8c483d113d8&amp;u_asig=dcb58d2b17766508834331470e" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">pay.ldxp.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>商家1254的小店 - 链动小铺</strong>
-                  <span class="resource-url">https://pay.ldxp.cn/shop/VNHE1W3U?u_atoken=69e58a83-104e-cb7e-426c-d8c483d113d8&amp;u_asig=dcb58d2b17766508834331470e</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://api.daiju.live/console/personal" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">api.daiju.live</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>小呆API</strong>
-                  <span class="resource-url">https://api.daiju.live/console/personal</span>
-                  <span class="resource-reason">&lt;urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)&gt;</span>
-                </a><a class="resource-card" href="https://sub2api.dearmer.xyz/subscriptions" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">sub2api.dearmer.xyz</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>我的订阅 - ApexAPI</strong>
-                  <span class="resource-url">https://sub2api.dearmer.xyz/subscriptions</span>
-                  <span class="resource-reason">HTTP Error 525: &lt;none&gt;</span>
-                </a><a class="resource-card" href="https://rawchat.cn/pastel/#/custom/1" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">rawchat.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>新版入口</strong>
-                  <span class="resource-url">https://rawchat.cn/pastel/#/custom/1</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://yimo.one/monitor" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">yimo.one</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>渠道状态 - Yimo-US</strong>
-                  <span class="resource-url">https://yimo.one/monitor</span>
-                  <span class="resource-reason">&lt;urlopen error _ssl.c:1015: The handshake operation timed out&gt;</span>
-                </a><a class="resource-card" href="https://www.leybc.cn/" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">leybc.cn</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>火山AI开发者社区-乐易网络 - Powered by Discuz!</strong>
-                  <span class="resource-url">https://www.leybc.cn/</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="https://checkin.new-api.abrdns.com/checkin" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">checkin.new-api.abrdns.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>签到 - 福利站</strong>
-                  <span class="resource-url">https://checkin.new-api.abrdns.com/checkin</span>
-                  <span class="resource-reason">HTTP Error 404: Not Found</span>
-                </a><a class="resource-card" href="chrome-extension://lapnciffpekdengooeolaienkeoilfeo/options.html#account" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">lapnciffpekdengooeolaienkeoilfeo</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>设置 | 中转站管理器 - All API Hub</strong>
-                  <span class="resource-url">chrome-extension://lapnciffpekdengooeolaienkeoilfeo/options.html#account</span>
-                  <span class="resource-reason">&lt;urlopen error unknown url type: chrome-extension&gt;</span>
-                </a><a class="resource-card" href="https://xn--cp3a08l.com/plan" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">xn--cp3a08l.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>赔钱机场 - 超便宜低价高速机场</strong>
-                  <span class="resource-url">https://xn--cp3a08l.com/plan</span>
-                  <span class="resource-reason">HTTP Error 403: Forbidden</span>
-                </a><a class="resource-card" href="https://xn--cp3a08l.com/login" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">xn--cp3a08l.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>赔钱机场 - 超便宜低价高速机场</strong>
-                  <span class="resource-url">https://xn--cp3a08l.com/login</span>
-                  <span class="resource-reason">HTTP Error 403: Forbidden</span>
-                </a><a class="resource-card" href="https://xn--cp3a08l.com/dashboard" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">xn--cp3a08l.com</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>赔钱机场 - 超便宜低价高速机场</strong>
-                  <span class="resource-url">https://xn--cp3a08l.com/dashboard</span>
-                  <span class="resource-reason">HTTP Error 403: Forbidden</span>
-                </a><a class="resource-card" href="https://niubi.nill.asia/sub2api/affiliate" target="_blank" rel="noopener noreferrer">
-                  <div class="resource-top">
-                    <span class="resource-domain">niubi.nill.asia</span>
-                    <span class="resource-open">Open</span>
-                  </div>
-                  <div class="resource-meta"><span class="platform-badge is-failed">探测失败</span></div>
-                  <strong>邀请返利 - 阿卡丽站点</strong>
-                  <span class="resource-url">https://niubi.nill.asia/sub2api/affiliate</span>
-                  <span class="resource-reason">HTTP Error 403: Forbidden</span>
-                </a>
-              </div>
-            </section>
+          </div>
+        </section>
     </section>
 
     <section id="emptyState" class="empty-state">
